@@ -1,10 +1,6 @@
 from rich.console import Console
 
-from kubedoctor.clients.kubernetes import (
-    get_namespaces,
-    get_pods,
-)
-
+from kubedoctor.clients.kubernetes import get_pods
 console = Console()
 
 
@@ -15,17 +11,12 @@ def diagnose(application: str) -> None:
     console.rule("[bold blue]🩺 KubeDoctor")
 
     try:
-        namespaces = get_namespaces()
         pods = get_pods(application)
+        namespace = pods[0]["namespace"] if pods else None
 
-        console.print(f"[bold]Application:[/bold] {application}\n")
+        console.print(f"[bold]Application:[/bold] {application}")
+        console.print(f"[bold]Namespace:[/bold] {namespace}\n")
         console.print("[green]✓ Connected to Kubernetes Cluster[/green]\n")
-
-        console.print("[bold]Namespaces[/bold]")
-        for namespace in namespaces:
-            console.print(f"• {namespace}")
-
-        console.print()
 
         if not pods:
             console.print(
@@ -37,7 +28,6 @@ def diagnose(application: str) -> None:
 
         for pod in pods:
             console.print(f"✓ {pod['name']}")
-            console.print(f"  Namespace : {pod['namespace']}")
             console.print(f"  Status    : {pod['status']}\n")
 
     except RuntimeError as error:

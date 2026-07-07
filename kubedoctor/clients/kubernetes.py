@@ -2,7 +2,7 @@ from kubernetes import client, config
 from kubernetes.client.exceptions import ApiException
 from kubernetes.config.config_exception import ConfigException
 
-
+# diagnose.py is not using get_namespaces(), will remove it if it is not needed, later.
 def get_namespaces() -> list[str]:
     """
     Retrieve all namespaces from the Kubernetes cluster.
