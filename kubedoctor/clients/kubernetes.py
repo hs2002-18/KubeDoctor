@@ -48,6 +48,11 @@ def get_pods(application: str) -> list[dict]:
                         "name": pod.metadata.name,
                         "namespace": pod.metadata.namespace,
                         "status": pod.status.phase,
+                        "restarts": sum(
+                            container.restart_count
+                            for container in (pod.status.container_statuses or [])
+                        ),
+                        "node": pod.spec.node_name,
                     }
                 )
 
@@ -58,6 +63,29 @@ def get_pods(application: str) -> list[dict]:
             "Unable to load Kubernetes configuration."
         )
 
+    except ApiException as error:
+        raise RuntimeError(
+            f"Failed to connect to the Kubernetes API: {error.reason}"
+        )
+
+def get_pod_events(namespace: str, pod_name: str) -> list[str]:
+    """
+    Retrieve events for a specific pod.
+    """
+    try:
+        config.load_kube_config()
+        v1=client.CoreV1Api()
+        events=v1.list_namespaced_event(namespace)
+        pod_events = []
+
+        for event in events.items:
+            if event.involved_object.name==pod_name:
+                pod_events.append(event.reason)
+        return pod_events
+    except ConfigException:
+        raise RuntimeError(
+            "Unable to load Kubernetes configuration."
+            )
     except ApiException as error:
         raise RuntimeError(
             f"Failed to connect to the Kubernetes API: {error.reason}"

@@ -1,6 +1,9 @@
 from rich.console import Console
 
-from kubedoctor.clients.kubernetes import get_pods
+from kubedoctor.clients.kubernetes import(
+     get_pods,
+     get_pod_events,
+     )
 console = Console()
 
 
@@ -28,7 +31,18 @@ def diagnose(application: str) -> None:
 
         for pod in pods:
             console.print(f"✓ {pod['name']}")
-            console.print(f"  Status    : {pod['status']}\n")
+            console.print(f"  Status    : {pod['status']}")
+            console.print(f"  Restarts    : {pod['restarts']}")
+            console.print(f"  Node    : {pod['node']}\n")
+            events = get_pod_events(namespace, pod["name"])
+            console.print(" Recent Events")
+            if events:
+                for event in events:
+                    console.print(f"    • {event}")
+            else:
+                console.print("    No recent events found.")
+        console.print()
+
 
     except RuntimeError as error:
         console.print(f"[bold red]✗ {error}[/bold red]")
