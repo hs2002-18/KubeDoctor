@@ -3,6 +3,7 @@ from rich.console import Console
 from kubedoctor.clients.kubernetes import(
      get_pods,
      get_pod_events,
+     get_pod_logs
      )
 from kubedoctor.core.recommendations import generate_recommendations
 console = Console()
@@ -13,7 +14,6 @@ def diagnose(application: str) -> None:
     Diagnose a Kubernetes application.
     """
     console.rule("[bold blue]🩺 KubeDoctor")
-
     try:
         pods = get_pods(application)
         namespace = pods[0]["namespace"] if pods else None
@@ -42,9 +42,9 @@ def diagnose(application: str) -> None:
                 console.print(f"[bold red]✗ {pod['name']}[/bold red]")
             else:
                 console.print(f"[bold green]✓ {pod['name']}[/bold green]")
-            console.print(f"  Status    : {pod['status']}")
-            console.print(f"  Restarts    : {pod['restarts']}")
-            console.print(f"  Node    : {pod['node']}\n")
+            console.print(f"  Status   : {pod['status']}")
+            console.print(f"  Restarts : {pod['restarts']}")
+            console.print(f"  Node     : {pod['node']}\n")
             console.print(" Recent Events")
             if events:
                 for event in events:
@@ -52,6 +52,25 @@ def diagnose(application: str) -> None:
             else:
                 console.print("    No recent events found.")
             
+            try:
+                logs = get_pod_logs(
+                namespace,
+                pod["name"],
+                )
+
+                console.print("\n  Recent Logs")
+
+                if logs:
+                 for line in logs:
+                    console.print(f"    {line}")
+                    console.print()
+                else:
+                   console.print("    No logs available.")
+                   console.print()
+
+            except RuntimeError:
+                    console.print("\n  Recent Logs")
+                    console.print("    Logs unavailable.")
 
             if  recommendations:
                 console.print("\n  Recommendations")

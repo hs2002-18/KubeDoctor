@@ -1,6 +1,7 @@
 import typer
 
 from kubedoctor.commands.diagnose import diagnose
+from kubedoctor.commands.helm import helm as helm_command
 
 app = typer.Typer(
     help="KubeDoctor - Kubernetes Troubleshooting CLI",
@@ -14,13 +15,11 @@ def run_diagnose(application: str) -> None:
     Diagnose a Kubernetes application.
     """
     diagnose(application)
-    
-@app.command("logs")
-def logs() -> None:
-    """View application logs."""
-    raise typer.Exit()
 
-@app.command("health")
-def health() -> None:
-    """Check application health."""
-    raise typer.Exit()
+@app.command()
+def helm(application: str):
+    """
+    Display Helm release information.
+    """
+    helm_command(application)
+    
