@@ -1,4 +1,4 @@
-name: KubeDoctor Tests
+name: Kubedoctor Tests
 
 on:
   push:
