@@ -145,35 +145,9 @@ kubedoctor version
 
 ### Diagnose
 
-```text
-🩺 KubeDoctor
-
-Application: nginx
-Namespace: default
-
-✓ Connected to Kubernetes Cluster
-
-Pods Found
-
-✓ nginx-576dbf79c-xjws5
-
-Status      : Running
-Restarts    : 0
-Node        : kubedoctor-control-plane
-
-Recent Events
-• Scheduled
-• Pulling
-• Pulled
-• Created
-• Started
-
-Recent Logs
-...
-
-```
-
+![alt text](diagnose.png)
 ---
+![alt text](helm.png)
 
 ### Problem Detection
 
