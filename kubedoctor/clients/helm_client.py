@@ -33,7 +33,7 @@ def get_release(application: str) -> dict | None:
 
         return None
 
-    except subprocess.CalledProcessError:
+    except subprocess.CalledProcessError as error:
         raise RuntimeError(
             # "Failed to retrieve Helm releases."
             error.stderr.strip() or error.stdout.strip()
